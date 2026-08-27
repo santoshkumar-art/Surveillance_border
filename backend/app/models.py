@@ -91,7 +91,9 @@ class Video(Base):
     processing_seconds: Mapped[float] = mapped_column(Float, default=0.0)
 
     uploaded_by_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"), nullable=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, index=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=utcnow, index=True
+    )
     started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
@@ -154,7 +156,9 @@ class Alert(Base):
     acknowledged: Mapped[bool] = mapped_column(Boolean, default=False, index=True)
     acknowledged_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     acknowledged_by: Mapped[str | None] = mapped_column(String(64), nullable=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, index=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=utcnow, index=True
+    )
 
     video: Mapped[Video] = relationship("Video", back_populates="alerts")
     detection: Mapped[Detection | None] = relationship("Detection", back_populates="alerts")

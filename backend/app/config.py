@@ -41,7 +41,7 @@ class Settings(BaseSettings):
     detection_confidence: float = Field(default=0.35, ge=0.01, le=0.99)
     face_confidence: float = Field(default=0.6, ge=0.01, le=0.99)
     plate_confidence: float = Field(default=0.3, ge=0.01, le=0.99)
-    drone_confidence: float = Field(default=0.35, ge=0.01, le=0.99)
+    drone_confidence: float = Field(default=0.55, ge=0.01, le=0.99)
     inference_image_size: int = Field(default=640, ge=320, le=1280)
     enable_plate_ocr: bool = True
     write_annotated_video: bool = True
