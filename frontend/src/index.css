@@ -1,0 +1,84 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  @apply bg-ink-950 text-neutral-200 font-sans antialiased;
+  background-image: radial-gradient(circle at 15% -10%, rgba(255, 255, 255, 0.05), transparent 45%);
+}
+
+::selection {
+  @apply bg-neutral-200 text-black;
+}
+
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  @apply bg-ink-600 rounded-full;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  @apply bg-ink-500;
+}
+
+@layer components {
+  .panel {
+    @apply rounded-2xl border border-ink-700 bg-ink-900/80 backdrop-blur;
+  }
+
+  .panel-hover {
+    @apply transition-colors duration-200 hover:border-ink-500;
+  }
+
+  .label {
+    @apply text-[11px] font-medium uppercase tracking-[0.14em] text-neutral-500;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-medium
+      transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-40;
+  }
+
+  .btn-primary {
+    @apply btn bg-neutral-100 text-black hover:bg-white active:scale-[0.98];
+  }
+
+  .btn-ghost {
+    @apply btn border border-ink-600 text-neutral-300 hover:border-ink-500 hover:text-white;
+  }
+
+  .btn-danger {
+    @apply btn border border-severity-critical/40 text-severity-critical hover:bg-severity-critical/10;
+  }
+
+  .input {
+    @apply w-full rounded-xl border border-ink-600 bg-ink-850 px-3 py-2 text-sm text-neutral-100
+      outline-none transition-colors placeholder:text-neutral-600 focus:border-neutral-400;
+  }
+
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-ink-600 px-2.5 py-1
+      text-[11px] font-medium uppercase tracking-wide text-neutral-400;
+  }
+
+  .table-cell {
+    @apply px-4 py-3 text-sm text-neutral-300;
+  }
+}
