@@ -1,0 +1,33 @@
+[project]
+name = "border-security-backend"
+version = "1.0.0"
+description = "AI-powered border security surveillance backend"
+requires-python = ">=3.10"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+exclude = [".venv", "data", "models"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "C4", "SIM", "ANN"]
+ignore = [
+    "ANN401", # dynamic typing needed for cv2/ultralytics objects
+    "B008",   # FastAPI dependency defaults
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["ANN", "E501"]
+"scripts/*" = ["ANN"]
+
+[tool.mypy]
+python_version = "3.10"
+ignore_missing_imports = true
+warn_unused_ignores = false
+disallow_untyped_defs = false
+exclude = "(\\.venv|data|models)"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+filterwarnings = ["ignore::DeprecationWarning", "ignore::UserWarning"]
