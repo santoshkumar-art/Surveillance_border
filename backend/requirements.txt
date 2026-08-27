@@ -1,0 +1,23 @@
+# Core API
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+python-multipart==0.0.20
+pydantic==2.10.4
+pydantic-settings==2.7.0
+SQLAlchemy==2.0.36
+alembic==1.14.0
+PyJWT==2.10.1
+bcrypt==4.2.1
+
+# Computer vision / AI
+ultralytics==8.3.58
+opencv-python-headless==4.10.0.84
+easyocr==1.7.2
+numpy==1.26.4
+
+# Dev / test
+pytest==8.3.4
+pytest-asyncio==0.25.0
+httpx==0.28.1
+ruff==0.8.4
+mypy==1.14.0
