@@ -219,5 +219,18 @@ def test_video_delete_removes_children(client: TestClient, auth: dict[str, str])
         assert db.scalars(select(Alert)).first() is None
 
 
+def test_video_list_filters_by_status_query(client: TestClient, auth: dict[str, str]) -> None:
+    completed_id = _seed_video(VideoStatus.COMPLETED)
+    failed_id = _seed_video(VideoStatus.FAILED)
+
+    completed = client.get("/api/videos", headers=auth, params={"status": "completed"}).json()
+    assert [item["id"] for item in completed["items"]] == [completed_id]
+
+    failed = client.get("/api/videos", headers=auth, params={"status": "failed"}).json()
+    assert [item["id"] for item in failed["items"]] == [failed_id]
+
+    assert client.get("/api/videos", headers=auth).json()["total"] == 2
+
+
 def test_health_endpoint_is_public(client: TestClient) -> None:
     assert client.get("/api/health").json()["status"] == "ok"

@@ -2,13 +2,22 @@
 
 from __future__ import annotations
 
+import shutil
+import subprocess
 from pathlib import Path
 
 import cv2
 import numpy as np
+import pytest
 
 from app.ai.detectors import BBox, RawDetection
-from app.ai.pipeline import DetectionTracker, TrackedDetection, annotate_frame, probe_video
+from app.ai.pipeline import (
+    DetectionTracker,
+    TrackedDetection,
+    annotate_frame,
+    probe_video,
+    transcode_to_h264,
+)
 from app.ai.vandalism import VandalismDetector, iou
 from app.models import DetectionCategory
 from app.services.alert_rules import AlertEngine
@@ -119,6 +128,40 @@ def test_probe_video_reads_metadata(tmp_path: Path) -> None:
     assert (meta.width, meta.height) == (160, 120)
     assert meta.fps > 0
     assert meta.duration_sec > 0
+
+
+def test_transcode_to_h264_makes_render_browser_playable(tmp_path: Path) -> None:
+    if shutil.which("ffmpeg") is None:
+        pytest.skip("ffmpeg is not installed")
+
+    path = tmp_path / "render.mp4"
+    writer = cv2.VideoWriter(str(path), cv2.VideoWriter_fourcc(*"mp4v"), 10.0, (160, 120))
+    rng = np.random.default_rng(1)
+    for _ in range(20):
+        writer.write(rng.integers(0, 255, (120, 160, 3), dtype=np.uint8))
+    writer.release()
+
+    assert transcode_to_h264(path) is True
+
+    probe = subprocess.run(
+        [
+            "ffprobe",
+            "-v",
+            "error",
+            "-select_streams",
+            "v:0",
+            "-show_entries",
+            "stream=codec_name",
+            "-of",
+            "csv=p=0",
+            str(path),
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    assert probe.stdout.strip() == "h264"
+    assert probe_video(path).width == 160
 
 
 def test_probe_video_rejects_non_video(tmp_path: Path) -> None:

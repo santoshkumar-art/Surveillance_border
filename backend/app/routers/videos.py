@@ -13,6 +13,7 @@ from fastapi import (
     File,
     Form,
     HTTPException,
+    Query,
     Request,
     UploadFile,
     status,
@@ -154,7 +155,7 @@ async def upload_video(
 
 @router.get("", response_model=VideoPage)
 def list_videos(
-    status_filter: VideoStatus | None = None,
+    status_filter: VideoStatus | None = Query(default=None, alias="status"),
     search: str | None = None,
     limit: int = 25,
     offset: int = 0,

@@ -4,6 +4,8 @@ detections into tracks and optionally renders an annotated MP4."""
 from __future__ import annotations
 
 import logging
+import shutil
+import subprocess
 import time
 from collections.abc import Callable, Iterator
 from dataclasses import dataclass, field
@@ -127,6 +129,51 @@ class DetectionTracker:
         key = f"{detection.category.value}-{self._counter}"
         tracks.append(_Track(key, detection.bbox, frame_index, detection.confidence))
         return key, True
+
+
+def transcode_to_h264(path: Path) -> bool:
+    """Re-encode an MP4 in place to H.264 so browsers can play it.
+
+    OpenCV's bundled FFmpeg has no H.264 encoder, so renders are written with the
+    MPEG-4 Part 2 (``mp4v``) fourcc, which Chrome and Safari refuse to decode. When
+    the ``ffmpeg`` binary is available the file is converted with faststart for
+    progressive playback; otherwise the original render is kept.
+    """
+    ffmpeg = shutil.which("ffmpeg")
+    if ffmpeg is None:
+        logger.warning("ffmpeg not found; annotated render stays MPEG-4 Part 2 (%s)", path.name)
+        return False
+
+    target = path.with_name(f"{path.stem}.h264{path.suffix}")
+    command = [
+        ffmpeg,
+        "-y",
+        "-loglevel",
+        "error",
+        "-i",
+        str(path),
+        "-c:v",
+        "libx264",
+        "-preset",
+        "veryfast",
+        "-crf",
+        "26",
+        "-pix_fmt",
+        "yuv420p",
+        "-movflags",
+        "+faststart",
+        "-an",
+        str(target),
+    ]
+    try:
+        subprocess.run(command, check=True, capture_output=True, timeout=900)
+    except (subprocess.CalledProcessError, subprocess.TimeoutExpired) as exc:
+        logger.warning("H.264 transcode failed for %s: %s", path.name, exc)
+        target.unlink(missing_ok=True)
+        return False
+
+    target.replace(path)
+    return True
 
 
 def probe_video(path: Path) -> VideoMeta:
@@ -293,6 +340,8 @@ class VideoAnalyzer:
             capture.release()
             if writer is not None:
                 writer.release()
+                if annotated_path is not None:
+                    transcode_to_h264(annotated_path)
 
         yield AnalysisSummary(
             frames_analyzed=frames_analyzed,
