@@ -57,6 +57,9 @@ JSON report available for download.
 
 - Python 3.10+
 - Node 20+
+- `ffmpeg` (with libx264) — OpenCV cannot encode H.264, so annotated renders are
+  transcoded with ffmpeg to play in browsers. Without it the render still exists
+  but Chrome/Safari will not decode it.
 - ~2.5 GB disk for model weights, sample footage and renders
 - CPU-only is fine (that is the default configuration)
 
