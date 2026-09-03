@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: surveillance-frontend
+    env: docker
+    repo: github.com/santoshkumar-art/Surveillance_border
+    branch: add-supabase-integration
+    dockerfilePath: frontend/Dockerfile
+    autoDeploy: true
+    plan: free
+    healthCheckPath: /
+    envVars:
+      - key: VITE_SUPABASE_URL
+        value: ""
+        secure: false
+      - key: VITE_SUPABASE_ANON_KEY
+        value: ""
+        secure: true
