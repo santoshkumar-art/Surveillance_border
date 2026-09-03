@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+      # You can pass build args to embed VITE_* at build time. The recommended approach here is to
+      # provide runtime env vars (see `environment` below) since we generate env.js at container start.
+      args:
+        - VITE_SUPABASE_URL=${VITE_SUPABASE_URL}
+        - VITE_SUPABASE_ANON_KEY=${VITE_SUPABASE_ANON_KEY}
+    ports:
+      - "8080:80"
+    environment:
+      # These are injected into env.js at runtime by the container entrypoint — DO NOT commit real values
+      - VITE_SUPABASE_URL=${VITE_SUPABASE_URL}
+      - VITE_SUPABASE_ANON_KEY=${VITE_SUPABASE_ANON_KEY}
+    restart: unless-stopped
+
+# Optional: Add a local supabase service using the supabase CLI or docker image if you need a local DB.
+# See docs/DOCKER.md for more details.
